@@ -1,0 +1,236 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+	{{ post.title_tag }}
+{% endblock %}
+
+{% block content %}
+<hr/>
+<div class="row">
+    <div class="col-2">
+      <h6><a class="text-muted" href="{% url 'category' post.category %}">{{ post.category }}</a></h6>
+    </div>
+    <div class="col-9">
+      
+    </div>
+</div>
+<hr/><br>
+<h3 class="text-capitalize text-center"><b>{{ post.title }}</b></h3>
+
+<div class="row">
+	<div class="col-1">
+      
+  </div>
+	<div class="col">
+		{% if post.video_file %}
+	    <video width="640" height="360" controls>
+	      <source src="{{ post.video_file.url }}" type="video/mp4">
+	    </video>
+	  {% endif %}
+
+	  {% if post.header_image %}
+	    <br/><br/>
+	    <img src="{{ post.header_image.url }}" class="img-fluid rounded">
+	  {% endif %}
+	</div>
+	<div class="col-1">
+      
+  </div>
+</div>
+
+<div class="row">
+	<div class="col-2">
+      
+  </div>
+	<div class="col-8">
+	  {% if post.header_image %}
+	    <mark style="background-color: black;" class="text-white-50">
+	    	{% if post.photo_credit %}{{ post.photo_credit }}{% endif %}
+	  	</mark>
+	  {% endif %}
+	</div>
+</div>
+
+<div class="row">
+  <div class="col-2"></div>
+  <div class="col-6">
+  	<br/>
+  	BY: <span class="text-muted"><b>{{post.author.first_name}} {{post.author.last_name}}</b></span>
+  	<small class="text-muted">
+		{{ post.post_date }}
+		</small>
+		<small>
+			{% if user.is_authenticated %}
+				{% if user.id == post.author.id %}
+				<a href="{% url 'update_post' post.pk %}" style="text-decoration: none" class="">(Edit)</a> 
+				<a href="{% url 'delete_post' post.pk %}" style="text-decoration: none" class="">(Delete)</a>
+				{% endif %}
+			{% endif %}
+		</small>
+  </div>
+  <div class="col"></div>
+</div>
+
+<br/>
+
+<div class="row">
+  <div class="col-1"></div>
+  <div class="col-10">
+
+		<div class="tab-content">
+		  <div class="tab-pane container active" id="home">
+		  	<blockquote class="blockquote">
+		  		<p class="lead">{{post.body|safe}}</p><br/>
+		  		<footer class="blockquote-footer">From www.insightful247.com</footer>
+		  	</blockquote>
+		  </div>
+		</div>
+
+	</div>
+  <div class="col"></div>
+</div>
+
+<hr>
+
+<div class="row">
+  <div class="col-7">
+  	<form action="{% url 'like_post' post.pk %}" method="POST">
+			{% csrf_token %}
+			{% if user.is_authenticated %}
+
+				{% if liked %}
+				<button type="submit", name="post_id", value="{{ post.id }}", class="btn btn-danger btn-sm">Unlike</button> 
+				{% else %}
+				<button type="submit", name="post_id", value="{{ post.id }}", class="btn btn-primary btn-sm">Like</button> 
+				{% endif %}
+			{% else %}
+			<small><a href="{% url 'login' %}">Login</a> to like a post</small>
+			{% endif %}
+			- {{ total_likes }} Likes
+			
+		</form>
+  </div>
+  <div class="col-2">
+  	
+	</div>
+  <div class="col">
+  	<span>
+      <a href="#" class="fa fa-facebook"></a>
+      <a href="#" class="fa fa-twitter"></a>
+      <a href="#" class="fa fa-youtube"></a>
+      <a href="#" class="fa fa-instagram"></a>
+    </span>
+  </div>
+</div>
+
+<hr/><br/>
+
+
+<div class="row">
+	
+	{% for post in pull_related_post %}
+    <div class="col-sm-4">
+      	<h5>
+	      	<a href="{% url 'article-detail' post.pk %}" style="text-decoration: none">
+						{{ post.title }}
+					</a>
+				</h5><br/>
+      {% if post.header_image %}
+	      <div class="">
+      	
+	      	<img src="{{ post.header_image.url }}" class="img-fluid">
+	      
+      	</div>
+      {% endif %}
+      <p>
+      	<a href="{% url 'show_profile_page' post.author.profile.id %}">{{ post.author.first_name }}
+		{{ post.author.last_name }}</a> - {{ post.post_date }} - <a href="{% url 'category' post.category|slugify %}"><span class="badge bg-info">{{ post.category }}</span></a>
+		<small>
+			{% if user.is_authenticated %}
+				{% if user.id == post.author.id %}
+					<a href="{% url 'update_post' post.pk %}" data-bs-toggle="tooltip" title="Edit your post" style="text-decoration: none" class="">(Edit)</a>
+					<a href="{% url 'delete_post' post.pk %}" data-bs-toggle="tooltip" title="Delete this post" style="text-decoration: none" class="">(Delete)</a>
+				{% endif %}
+			{% endif %}  
+		</small>
+
+		<br />
+		{{ post.snippet }}
+	
+      </p>
+      <hr class="d-sm-none">
+    </div>
+    {% endfor %}
+
+ </div>
+
+<div class="media border p-3">
+	{% if post.author.profile.profile_pic %}
+  <img src="{{ post.author.profile.profile_pic.url }}" alt="John Doe" class="mr-3 mt-3 rounded-circle" style="width:60px;">
+  {% else %}
+  <img class="mr-3 mt-3 rounded-circle" style="width:60px;" src="{% static 'theblog/images/mypro.jpg' %}" alt="Profile picture">
+  {% endif %}
+  <div class="media-body">
+    <h4>{{ post.author.first_name }} {{post.author.last_name}}</h4>
+    	<i>
+    	
+    	<p class="small text-muted">
+    	{% if post.author.profile.website_url %}
+    	<a href="{{ post.author.profile.website_url }}">Website </a> |
+    	{% endif %}
+
+    	{% if post.author.profile.facebook_url %}
+    	<a href="{{ post.author.profile.facebook_url }}">Facebook</a> |
+    	{% endif %}
+
+    	{% if post.author.profile.twitter_url %}
+    	<a href="{{ post.author.profile.twitter_url }}">Twitter </a> |
+    	{% endif %}
+
+    	{% if post.author.profile.instagram_url %}
+    	<a href="{{ post.author.profile.instagram_url }}">Instagram </a> |
+    	{% endif %}
+    	
+    	{% if post.author.profile.pinterest_url %}
+    	<a href="{{ post.author.profile.pinterest_url }}">Pinterest </a>
+    	{% endif %}
+    </p>
+
+    </i>
+  	
+    <p>{{post.author.profile.bio}}</p>
+
+    {% if post.author.profile.id %}
+    <a href="{% url 'show_profile_page' post.author.profile.id %}" class="btn btn-primary">See Profile</a>
+    {% endif %}
+  </div>
+</div>
+
+
+<br/><br/>
+<hr/>
+<h2>Comments...</h2>
+
+{% if not post.comments.all %}
+	No comments to show...<a href="{% url 'add_comment' post.pk %}">Add one</a><br/>
+{% else %}
+<a href="{% url 'add_comment' post.pk %}">Add comment</a><br/><br/>
+
+	<div class="media border p-3">
+	{% for comment in post.comments.all %}
+
+	
+	  <div class="media-body">
+	    <h5>{{ comment.name }} </h5><small><i>{{ comment.date_added }}</i></small>
+	    <p>{{ comment.body }}</p>
+	  </div><br/>
+	
+
+	{% endfor %}
+	</div>
+{% endif %}
+<br/>
+<hr/>
+
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<section>
+  <div class="container">
+    <div class="row">
+
+      <div class="col-md-9" data-aos="fade-up">
+        {% if category_posts %}
+        <h3 class="category-title">Category: {{cats}}</h3>
+        {% for post in category_posts %}
+        <div class="d-md-flex post-entry-2 half">
+          <a href="{% url 'article-detail' post.pk %}" class="me-4 thumbnail">
+            {% if post.video_file %}
+              <div class="">
+              <video class="img-fluid" controls>
+                  <source src="{{ post.video_file.url }}" type="video/mp4">
+              </video>
+
+              </div>
+            {% else %}
+              <div class="">
+              
+                <img src="{{ post.header_image.url }}" class="img-fluid">
+              
+              </div>
+            {% endif %}
+          </a>
+          <div>
+            <div class="post-meta"><span class="date">{{ post.category }}</span> <span class="mx-1">&bullet;</span> <span>{{ post.post_date }}</span></div>
+            <h3><a href="{% url 'article-detail' post.pk %}">{{ post.title }}</a></h3>
+            <p>{{ post.snippet }}</p>
+            <div class="d-flex align-items-center author">
+              <div class="photo">
+                {% if post.author.profile.profile_pic %}
+                  <img src="{{ post.author.profile.profile_pic.url }}" alt="" class="img-fluid">
+                  {% else %}
+                  <img src="{% static 'theblog/images/mypro.jpg' %}" class="img-fluid" alt="default profile image">
+                {% endif %}
+              </div>
+              <div class="name">
+                <h3 class="m-0 p-0">{{ post.author.first_name }}</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <div class="text-start py-4">
+          <div class="custom-pagination">
+            <a href="#" class="prev">Prevous</a>
+            <a href="#" class="active">1</a>
+            <a href="#">2</a>
+            <a href="#">3</a>
+            <a href="#">4</a>
+            <a href="#">5</a>
+            <a href="#" class="next">Next</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <!-- ======= Sidebar ======= -->
+
+        <div class="aside-block">
+          <h3 class="aside-title">Video</h3>
+          <div class="video-post">
+            <a href="https://www.youtube.com/watch?v=AiFfDjmd0jU" class="glightbox link-video">
+              <span class="bi-play-fill"></span>
+              <img src="assets/img/post-landscape-5.jpg" alt="" class="img-fluid">
+            </a>
+          </div>
+        </div><!-- End Video -->
+
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+
+
+{% endblock %}

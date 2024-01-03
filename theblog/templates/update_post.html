@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}
+	Edit blog post
+{% endblock %}
+
+{% block content %}
+
+{% if user.is_authenticated %}
+	{% if user.id == post.author.id %}
+	<div class="row">
+	    <div class="col-sm-8 p-3">
+	    	<h1>Edit This Post... or <a href="{% url 'delete_post' post.pk %}" style="text-decoration: none" class="">(Delete)</a></h1>
+			<div class="form-group">
+				<form method="POST">
+					{% csrf_token %}
+					{{ form.media }}
+					{{ form.as_p }}
+				<button class="btn btn-secondary">Update</button>
+			</div>
+	    </div>
+	</div> 
+	{% else %}
+	 	<h1>You cannot edit this post</h1>
+	{% endif %}
+{% else %}
+ You're not allowed here...
+{% endif %}  
+
+
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block title %}
+    Search...
+{% endblock %}
+
+{% block content %}
+    <div class="form-group">
+        <form method="POST">
+            <div class="row">
+                <div class="col-sm-8 p-3">
+                    {% csrf_token %}
+                    <input type="input" class="form-control" placeholder="Search..." name="search">
+                    <br><br>
+                </div>
+                <div class="col p-3">
+                    <button type="submit" class="btn btn-secondary">Search</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="row">
+        {% if search %}
+            <p>Results for: <b>{{ search }}</b></p><br><br>
+
+            {% for post in searched %}
+                <div class="col-sm-4">
+                    <h6>
+                        <a href="{% url 'article-detail' post.pk %}" style="text-decoration: none">
+                            {{ post.title }}
+                        </a>
+                    </h6><br/>
+
+                    {% if post.video_file %}
+                        <div class="">
+                            <video class="img-fluid" controls>
+                                <source src="{{ post.video_file.url }}" type="video/mp4">
+                            </video>
+                        </div>
+                    {% elif post.header_image %}
+                        <div class="">
+                            <img src="{{ post.header_image.url }}" class="img-fluid">
+                        </div>
+                    {% endif %}
+
+                    <p>
+                        <a href="{% url 'show_profile_page' post.author.profile.id %}">
+                            {{ post.author.first_name }}
+                            {{ post.author.last_name }}
+                        </a> - {{ post.post_date }}
+
+                        <small>
+                            {% if user.is_authenticated %}
+                                {% if user.id == post.author.id %}
+                                    <a href="{% url 'update_post' post.pk %}" data-bs-toggle="tooltip" title="Edit your post" style="text-decoration: none" class="">(Edit)</a>
+                                    <a href="{% url 'delete_post' post.pk %}" data-bs-toggle="tooltip" title="Delete this post" style="text-decoration: none" class="">(Delete)</a>
+                                {% endif %}
+                            {% endif %}
+                        </small>
+
+                        <br />
+                        {{ post.snippet }}
+                    </p>
+                    <hr class="d-sm-none">
+                </div>
+            {% endfor %}
+
+            {% if searched|length == 0 %}
+                <div class="alert alert-danger alert-dismissible">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <strong>Oops!</strong> No posts were found...
+                </div>
+            {% endif %}
+
+        {% else %}
+            {# Handle the case when search is empty #}
+        {% endif %}
+    </div>
+{% endblock %}
