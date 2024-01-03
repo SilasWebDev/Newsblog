@@ -11,9 +11,9 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 import os
-import django_heroku
+#import django_heroku
 import dj_database_url
-import psycopg2
+import psycopg2_binary
 from decouple import config
 
 from pathlib import Path
@@ -33,7 +33,7 @@ SECRET_KEY = 'django-insecure-*tlq#x*j*2(53p%vpn3xhx)48h%&ch=g+$ll)=z&glbdn3n+(q
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['vercel.app', 'now.sh', '127.0.0.1:8000']
+ALLOWED_HOSTS = ['.vercel.app']
 
 
 # Application definition
