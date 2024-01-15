@@ -86,8 +86,9 @@ def CategoryListView(request):
 	return render(request, 'category_list.html', {'cat_menu_list':cat_menu_list})
 
 def CategoryView(request, cats):
-	category_posts = Post.objects.filter(category=cats.replace('-', ' ').title()) #query to filter stuff in a model
-	return render(request, 'categories.html', {'cats':cats.title().replace('-', ' '), 'category_posts':category_posts})
+    category = get_object_or_404(Category, name=cats.replace('-', ' ').title())
+    category_posts = Post.objects.filter(category=category)
+    return render(request, 'categories.html', {'cats': cats.title().replace('-', ' '), 'category_posts': category_posts})
 
 
 class ArticleDetailView(DetailView):
